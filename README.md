@@ -1,7 +1,7 @@
 # BallBox
 
 <p align="center">
-  <img width="400" height="400" src="https://github.com/dcragusa/BallBox/blob/master/balls.gif)">
+  <img width="400" height="400" src="https://github.com/dcragusa/BallBox/blob/master/balls.gif">
 </p>
 
 A simulation of balls in a box, with inelastic collisions. Now argparse-ified!
@@ -32,11 +32,11 @@ More examples can be found below.
     python ballbox.py -s 400 400 -n 20 --fps 30 -f gif -d 10 -o balls_simple
     
 <p align="center">
-  <img width="400" height="400" src="https://github.com/dcragusa/BallBox/blob/master/balls_simple.gif)">
+  <img width="400" height="400" src="https://github.com/dcragusa/BallBox/blob/master/balls_simple.gif">
 </p>
 
     python ballbox.py -s 400 400 -n 40 --random_sizes --random_colours --speed 1.5 -f gif -d 10 -o balls_complex
 
 <p align="center">
-  <img width="400" height="400" src="https://github.com/dcragusa/BallBox/blob/master/balls_complex.gif)">
+  <img width="400" height="400" src="https://github.com/dcragusa/BallBox/blob/master/balls_complex.gif">
 </p>
