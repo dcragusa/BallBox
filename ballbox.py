@@ -40,8 +40,8 @@ class Vector2D:
 
 
 class Ball:
-    def __init__(self, x, y, r, vx, vy):
-        self.x, self.y, self.r, self.v = x, y, r, Vector2D(vx, vy)
+    def __init__(self, x, y, r, vx, vy, e):
+        self.x, self.y, self.r, self.v, self.e = x, y, r, Vector2D(vx, vy), e
         self.in_collision = []
 
     @property
@@ -72,6 +72,7 @@ class Ball:
     def check_ball_collision(self, other):
         if self.is_colliding(other):
             if other not in self.in_collision:
+                e = min(self.e, other.e)
                 unit_normal_vector = Vector2D(other.x - self.x, other.y - self.y).get_unit_vector()
                 unit_tangent_vector = Vector2D(-unit_normal_vector.y, unit_normal_vector.x)
                 v1_scalar_normal_before = self.v.dot_product(unit_normal_vector)
@@ -79,10 +80,10 @@ class Ball:
                 v2_normal_scalar_before = other.v.dot_product(unit_normal_vector)
                 v2_tangent_scalar = other.v.dot_product(unit_tangent_vector)
                 v1_normal_scalar_after = (
-                    (v1_scalar_normal_before * (self.mass - other.mass)) + (2 * other.mass * v2_normal_scalar_before)
+                    (v1_scalar_normal_before * (self.mass - e * other.mass)) + (e+1 * other.mass * v2_normal_scalar_before)
                 ) / (self.mass + other.mass)
                 v2_normal_scalar_after = (
-                    (v2_normal_scalar_before * (other.mass - self.mass)) + (2 * self.mass * v1_scalar_normal_before)
+                    (v2_normal_scalar_before * (other.mass - e * self.mass)) + (e+1 * self.mass * v1_scalar_normal_before)
                 ) / (self.mass + other.mass)
                 v1_normal_vector_after = v1_normal_scalar_after * unit_normal_vector
                 v1_tangent_vector_after = v1_tangent_scalar * unit_tangent_vector
@@ -111,15 +112,15 @@ class Box:
         self.artist_to_ball = {}
         plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
 
-    def add_ball(self, x, y, r, vx, vy):
-        self.balls.append(ball := Ball(x, y, r, vx, vy))
+    def add_ball(self, x, y, r, vx, vy, e):
+        self.balls.append(ball := Ball(x, y, r, vx, vy, e))
         self.artist_to_ball[self.ax.add_artist(plt.Circle((x, y), r, color='b'))] = ball
 
     def add_balls(self, ball_list):
         for ball in ball_list:
             self.add_ball(*ball)
 
-    def add_random_balls(self, num, random_sizes=True, random_colours=True, speed_factor=1.0):
+    def add_random_balls(self, num, random_sizes=True, random_colours=True, speed_factor=1.0, e=1.0):
         i, j = 0, 0
         while i < num:
             if j > num * 5:
@@ -130,7 +131,7 @@ class Box:
             speed = BASE_SPEED * speed_factor * self.size_factor
             ball = Ball(
                 x := uniform(size, self.size_x-size), y := uniform(size, self.size_y-size),
-                size, uniform(-speed, speed), uniform(-speed, speed)
+                size, uniform(-speed, speed), uniform(-speed, speed), e
             )
             if not any([ball.is_colliding(existing_ball) for existing_ball in self.balls]):
                 i += 1
@@ -188,6 +189,10 @@ if __name__ == '__main__':
         help='The number of balls to simulate. Default: 60.'
     )
     parser.add_argument(
+        '-e', '--elasticity', default=1.0, type=float,
+        help='Coefficient of restitution.  Default: 1.0, i.e. perfectly elastic'
+    )
+    parser.add_argument(
         '--random_sizes', action='store_true',
         help='If present, balls will have random sizes.'
     )
@@ -220,6 +225,6 @@ if __name__ == '__main__':
 
     box = Box(args.size[0], args.size[1])
     box.add_random_balls(
-        args.num, random_sizes=args.random_sizes, random_colours=args.random_colours, speed_factor=args.speed
+        args.num, random_sizes=args.random_sizes, random_colours=args.random_colours, speed_factor=args.speed, e=args.elasticity
     )
     box.start_animation(file_type=args.file_type, fps=args.fps, duration=args.duration, filename=args.output)
