@@ -80,10 +80,10 @@ class Ball:
                 v2_normal_scalar_before = other.v.dot_product(unit_normal_vector)
                 v2_tangent_scalar = other.v.dot_product(unit_tangent_vector)
                 v1_normal_scalar_after = (
-                    (v1_scalar_normal_before * (self.mass - e * other.mass)) + (e+1 * other.mass * v2_normal_scalar_before)
+                    (v1_scalar_normal_before * (self.mass - e * other.mass)) + ((e + 1) * other.mass * v2_normal_scalar_before)
                 ) / (self.mass + other.mass)
                 v2_normal_scalar_after = (
-                    (v2_normal_scalar_before * (other.mass - e * self.mass)) + (e+1 * self.mass * v1_scalar_normal_before)
+                    (v2_normal_scalar_before * (other.mass - e * self.mass)) + ((e + 1) * self.mass * v1_scalar_normal_before)
                 ) / (self.mass + other.mass)
                 v1_normal_vector_after = v1_normal_scalar_after * unit_normal_vector
                 v1_tangent_vector_after = v1_tangent_scalar * unit_tangent_vector
